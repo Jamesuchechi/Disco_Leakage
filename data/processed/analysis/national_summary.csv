@@ -1,0 +1,3 @@
+period,received_ngn_bn,billed_ngn_bn,collected_ngn_bn,unbilled_ngn_bn,uncollected_ngn_bn,total_leak_ngn_bn,unbilled_share,recovery_pct,billing_eff_pct,collection_eff_pct,atcc_loss_pct,received_basis
+2025Q4,969.19,795.06,630.93,174.1300000000001,164.13,338.2600000000001,0.5147815290013601,65.09869065921026,82.03,79.36,34.9,pre_vat
+2026Q1,955.19,756.93,597.56,198.2600000000001,159.37,357.6300000000001,0.554371836814585,62.55928139951213,79.24,78.95,37.44,vat_adjusted

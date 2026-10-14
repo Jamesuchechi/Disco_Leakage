@@ -46,16 +46,33 @@ disco-leakage/
 │   ├── validate.py     # reconciliation checks
 │   ├── versions.py     # dataset as of each report -> data/versions
 │   ├── analyse.py      # leak split, rankings, quarter changes, projection
-│   └── build_dashboard.py  # analysis outputs -> docs/index.html
+│   ├── build_dashboard.py  # analysis outputs -> docs/index.html
+│   ├── ingest.py       # unified ingestion for PDF, CSV, Excel, Parquet
+│   ├── app.py          # interactive FastAPI web application & API
+│   └── templates/app.html  # modern interactive frontend
 ├── dashboard/template.html  # static dashboard; src/build_dashboard.py fills it -> docs/index.html
 ├── notebooks/          # exploration and the final write-up
-├── tests/              # validation against published totals
+├── tests/              # validation against published totals & upload tests
 ├── PRODUCT.md
 ├── TODO.md
 └── README.md
 ```
 
-## Run it
+## Interactive Web Application
+
+Run the local web app to upload files (`.pdf`, `.csv`, `.xlsx`, `.parquet`), inspect real-time validation checks, explore interactive charts, and export data:
+
+```bash
+uv run python -m src.app
+```
+Then navigate to **http://127.0.0.1:8000** in your browser.
+
+- **Multi-Format Ingestion**: Drag & drop NERC quarterly report PDFs, raw/tidy CSVs, multi-sheet Excel files, or Parquet datasets.
+- **Automated Validation**: Instant coverage, reconciliation, and mathematical tolerance checks with status indicators.
+- **Live Preview & Visuals**: Executive KPI cards, collection efficiency trend lines (DisCo vs National), stacked leak breakdown (unbilled vs uncollected), and sortable detail table.
+- **Export Options**: Download cleaned data as CSV, Parquet, JSON, or standalone static HTML dashboard.
+
+## Batch Pipeline
 
 ```bash
 uv sync --extra dev
@@ -68,7 +85,7 @@ uv run python -m src.versions            # -> data/versions/v01_*.csv ... + mani
 uv run python scripts/load_to_strata.py  # prints the upload/commit sequence for Strata
 uv run python -m src.analyse             # -> data/processed/analysis/ (incl. FACTS.md)
 uv run python -m src.build_dashboard     # -> docs/index.html (static dashboard; open it, or host on GitHub Pages)
-uv run pytest                            # includes golden tests against the real Q1 2026 PDF once downloaded
+uv run pytest                            # includes golden tests against the real Q1 2026 PDF and ingest suite
 ```
 
 ## Limitations

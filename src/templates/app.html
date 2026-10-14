@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DisCo Leakage Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0f17;
+  --surface: #121824;
+  --surface-hover: #1a2233;
+  --card: #151d2c;
+  --card-border: #222e44;
+  --ink: #f0f4fc;
+  --ink-secondary: #94a3b8;
+  --ink-muted: #64748b;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59, 130, 246, 0.2);
+  --bill: #f97316;
+  --coll: #38bdf8;
+  --ok: #10b981;
+  --ok-bg: rgba(16, 185, 129, 0.12);
+  --warn: #f59e0b;
+  --warn-bg: rgba(245, 158, 11, 0.12);
+  --bad: #ef4444;
+  --bad-bg: rgba(239, 68, 68, 0.12);
+  --chip: #1e293b;
+  --radius: 12px;
+  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+  --ink: #0f172a;
+  --ink-secondary: #475569;
+  --ink-muted: #94a3b8;
+  --accent: #2563eb;
+  --accent-glow: rgba(37, 99, 235, 0.15);
+  --bill: #ea580c;
+  --coll: #0284c7;
+  --ok: #059669;
+  --ok-bg: rgba(5, 150, 105, 0.1);
+  --warn: #d97706;
+  --warn-bg: rgba(217, 119, 6, 0.1);
+  --bad: #dc2626;
+  --bad-bg: rgba(220, 38, 38, 0.1);
+  --chip: #f1f5f9;
+  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  font-size: 14px;
+  min-height: 100vh;
+  transition: background-color 0.25s, color 0.25s;
+}
+
+header {
+  border-bottom: 1px solid var(--card-border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: blur(8px);
+}
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.logo-area { display: flex; align-items: center; gap: 12px; }
+.logo-badge {
+  background: linear-gradient(135deg, var(--bill), var(--coll));
+  color: #fff;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+.logo-title { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+.logo-sub { font-size: 12px; color: var(--ink-secondary); }
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  color: var(--ink);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+.btn:hover { background: var(--surface-hover); border-color: var(--accent); }
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { opacity: 0.92; background: var(--accent); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Upload zone */
+.upload-card {
+  background: var(--card);
+  border: 2px dashed var(--card-border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.upload-card:hover, .upload-card.drag-over {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+  box-shadow: 0 0 25px var(--accent-glow);
+}
+.upload-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 12px;
+  background: var(--chip);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+.upload-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.upload-hint { font-size: 13px; color: var(--ink-secondary); margin-bottom: 16px; }
+.format-tags {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tag {
+  background: var(--chip);
+  border: 1px solid var(--card-border);
+  color: var(--ink-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+}
+.tag.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+#fileInput { display: none; }
+
+/* Status Bar */
+.status-banner {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.status-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-indicator.success { background: var(--ok-bg); color: var(--ok); }
+.status-indicator.warning { background: var(--warn-bg); color: var(--warn); }
+.status-indicator.error { background: var(--bad-bg); color: var(--bad); }
+
+.control-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.period-tabs {
+  display: inline-flex;
+  background: var(--chip);
+  border-radius: 10px;
+  padding: 3px;
+  border: 1px solid var(--card-border);
+}
+.period-tab {
+  border: 0;
+  background: none;
+  color: var(--ink-secondary);
+  font: 600 13px inherit;
+  padding: 6px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.period-tab.active {
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* KPI Grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--card-border);
+}
+.kpi-card.accent::before { background: var(--accent); }
+.kpi-card.bill::before { background: var(--bill); }
+.kpi-card.coll::before { background: var(--coll); }
+.kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--ink-secondary); letter-spacing: 0.05em; }
+.kpi-val { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin-top: 4px; display: flex; align-items: baseline; gap: 4px; }
+.kpi-unit { font-size: 13px; font-weight: 500; color: var(--ink-secondary); }
+.kpi-sub { font-size: 12px; color: var(--ink-secondary); margin-top: 6px; }
+
+/* Leak split bar */
+.split-bar {
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  margin: 10px 0 6px;
+  background: var(--chip);
+}
+.split-bar i { display: block; height: 100%; transition: width 0.3s ease; }
+
+/* Grid 2 column */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 900px) {
+  .charts-grid { grid-template-columns: 1fr; }
+}
+
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.chart-title { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.chart-desc { font-size: 12px; color: var(--ink-secondary); margin-top: 2px; }
+
+/* SVG formatting */
+svg text { fill: var(--ink); font-family: inherit; font-size: 11px; }
+svg text.muted { fill: var(--ink-muted); }
+.chart-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 6px; }
+
+/* Filter pills */
+.disco-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.disco-pill {
+  border: 1px solid var(--card-border);
+  background: var(--chip);
+  color: var(--ink-secondary);
+  font: 600 11px inherit;
+  padding: 4px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.disco-pill:hover, .disco-pill.active {
+  background: var(--coll);
+  color: #fff;
+  border-color: var(--coll);
+}
+
+/* Detail Table */
+.table-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.search-input {
+  background: var(--chip);
+  border: 1px solid var(--card-border);
+  color: var(--ink);
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  min-width: 220px;
+}
+.search-input:focus { border-color: var(--accent); }
+
+.table-scroll { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 820px;
+}
+th, td {
+  padding: 10px 12px;
+  text-align: right;
+  border-bottom: 1px solid var(--card-border);
+  white-space: nowrap;
+}
+th:first-child, td:first-child { text-align: left; }
+th {
+  color: var(--ink-secondary);
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+th:hover { color: var(--ink); }
+th.sort-active { color: var(--accent); }
+tbody tr { cursor: pointer; transition: background-color 0.1s; }
+tbody tr:hover { background: var(--surface-hover); }
+tbody tr.selected { background: rgba(59, 130, 246, 0.12); }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.badge.billing { background: rgba(249, 115, 22, 0.15); color: var(--bill); }
+.badge.collection { background: rgba(56, 189, 248, 0.15); color: var(--coll); }
+.badge.both { background: var(--chip); color: var(--ink-secondary); }
+
+.delta-pos { color: var(--ok); font-weight: 600; }
+.delta-neg { color: var(--bad); font-weight: 600; }
+.delta-zero { color: var(--ink-muted); }
+
+/* Validation accordion */
+.val-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.val-header {
+  padding: 14px 20px;
+  background: var(--surface);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+.val-body { padding: 16px 20px; display: none; }
+.val-body.open { display: block; }
+.val-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 13px;
+}
+.val-item:last-child { border-bottom: none; }
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  z-index: 100;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-area">
+      <div class="logo-badge">NERC DATA</div>
+      <div>
+        <div class="logo-title">DisCo Commercial Leakage Intelligence</div>
+        <div class="logo-sub">Nigeria electricity distribution billing, collection & loss analytics</div>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-sm" id="themeToggle" title="Toggle Dark/Light">Theme</button>
+      <button class="btn btn-sm" id="loadDemoBtn">Reload Cleaned Data</button>
+      <a href="/docs/index.html" target="_blank" class="btn btn-sm">Static Dashboard ↗</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- File Upload Zone -->
+  <section class="upload-card" id="dropZone">
+    <input type="file" id="fileInput" accept=".pdf,.csv,.xlsx,.xls,.parquet">
+    <div class="upload-icon">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+    </div>
+    <div class="upload-title">Drop your file here, or click to browse</div>
+    <div class="upload-hint">Upload NERC Quarterly PDF reports, cleaned CSVs, Excel spreadsheets, or Parquet files.</div>
+    <div class="format-tags">
+      <span class="tag">PDF (.pdf)</span>
+      <span class="tag">CSV (.csv)</span>
+      <span class="tag">EXCEL (.xlsx, .xls)</span>
+      <span class="tag">PARQUET (.parquet)</span>
+    </div>
+  </section>
+
+  <!-- Status Banner -->
+  <section class="status-banner" id="statusBanner" style="display:none;">
+    <div class="status-left">
+      <span class="status-indicator success" id="statusPill">✓ Validated</span>
+      <strong id="statusFilename">data.csv</strong>
+      <span id="statusFormat" class="tag">CSV</span>
+      <span id="statusSummary" style="color:var(--ink-secondary);font-size:13px;"></span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-sm" id="saveWorkspaceBtn">Save to Workspace</button>
+    </div>
+  </section>
+
+  <!-- Controls: Periods & Export -->
+  <section class="control-bar">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span style="font-weight:600;font-size:13px;color:var(--ink-secondary)">Reporting Quarter:</span>
+      <div class="period-tabs" id="periodTabs"></div>
+      <span id="vatBasisNote" style="font-size:12px;color:var(--ink-muted)"></span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-sm" onclick="exportData('csv')">Export CSV</button>
+      <button class="btn btn-sm" onclick="exportData('parquet')">Export Parquet</button>
+      <button class="btn btn-sm" onclick="exportData('json')">Export JSON</button>
+      <button class="btn btn-sm" onclick="exportData('html')">Export Standalone HTML</button>
+    </div>
+  </section>
+
+  <!-- KPI Cards -->
+  <section class="kpi-grid" id="kpiGrid"></section>
+
+  <!-- Charts -->
+  <section class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Collection Efficiency Over Time (%)</div>
+          <div class="chart-desc">Share of billed revenue actually collected. Click a DisCo below to compare against National line.</div>
+        </div>
+      </div>
+      <div id="trendChart"></div>
+      <div class="disco-pills" id="discoPills"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Commercial Leak by DisCo (₦ Billion)</div>
+          <div class="chart-desc">DisCos ranked by total money lost. Orange: Unbilled energy. Blue: Uncollected revenue.</div>
+        </div>
+      </div>
+      <div id="barChart"></div>
+      <div class="chart-legend">
+        <span><i class="legend-dot" style="background:var(--bill)"></i>Unbilled (Energy received but never billed)</span>
+        <span><i class="legend-dot" style="background:var(--coll)"></i>Uncollected (Billed to customers but unpaid)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detail Table -->
+  <section class="table-card">
+    <div class="table-toolbar">
+      <div>
+        <div style="font-size:16px;font-weight:700">DisCo Performance & Leakage Detail</div>
+        <div style="font-size:12px;color:var(--ink-secondary)">Click any column to sort, or a row to highlight across charts.</div>
+      </div>
+      <input type="text" id="searchFilter" class="search-input" placeholder="Search DisCo...">
+    </div>
+    <div class="table-scroll">
+      <table id="discoTable">
+        <thead>
+          <tr>
+            <th data-key="disco">DisCo</th>
+            <th data-key="leak">Total Leak (₦bn)</th>
+            <th data-key="share_of_disco_leak_pct">Share of Leak</th>
+            <th data-key="unbilled_share">Unbilled Share</th>
+            <th data-key="primary">Primary Driver</th>
+            <th data-key="ce">Collection %</th>
+            <th data-key="dce">Δ Collection</th>
+            <th data-key="be">Billing %</th>
+            <th data-key="atcc">ATC&C Loss %</th>
+            <th data-key="datcc">Δ ATC&C</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Validation Issues & Health Panel -->
+  <section class="val-card">
+    <div class="val-header" id="valHeader">
+      <span>Reconciliation & Validation Report (<span id="valCount">0</span> checks / warnings)</span>
+      <span style="font-size:12px;color:var(--accent)">Toggle Details ▼</span>
+    </div>
+    <div class="val-body" id="valBody"></div>
+  </section>
+</main>
+
+<div id="toast"></div>
+
+<script>
+let AppData = { disco: [], national: [], changes: [], issues: [], note: "" };
+let curPeriod = "";
+let focusDisco = null;
+let sortCol = "leak";
+let sortAsc = false;
+let searchQuery = "";
+
+const $ = id => document.getElementById(id);
+const f1 = n => n == null ? "—" : Number(n).toFixed(1);
+const f2 = n => n == null ? "—" : Number(n).toFixed(2);
+
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3200);
+}
+
+// Theme handling
+const themeToggle = $('themeToggle');
+themeToggle.onclick = () => {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+};
+if (localStorage.getItem('theme')) {
+  document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
+}
+
+// Upload & Drag/Drop
+const dropZone = $('dropZone');
+const fileInput = $('fileInput');
+
+dropZone.onclick = () => fileInput.click();
+dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add('drag-over'); };
+dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
+dropZone.ondrop = e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
+};
+fileInput.onchange = e => {
+  if (e.target.files.length) uploadFile(e.target.files[0]);
+};
+
+async function uploadFile(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  showToast(`Uploading and ingesting ${file.name}...`);
+  try {
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    const json = await res.json();
+    if (json.status === 'error') {
+      alert(`Ingestion Error: ${json.summary_note || 'Failed to process file'}`);
+      return;
+    }
+    loadIngestPayload(json);
+    showToast(`Successfully ingested ${file.name}`);
+  } catch (err) {
+    alert(`Upload failed: ${err.message}`);
+  }
+}
+
+function loadIngestPayload(res) {
+  $('statusBanner').style.display = 'flex';
+  $('statusFilename').textContent = res.filename;
+  $('statusFormat').textContent = res.format;
+  $('statusSummary').textContent = res.summary_note;
+
+  const pill = $('statusPill');
+  pill.className = `status-indicator ${res.status}`;
+  pill.textContent = res.status === 'success' ? '✓ Validated' : (res.status === 'warning' ? '⚠ Warnings' : '✕ Issues');
+
+  AppData = {
+    disco: res.disco_data.map(r => ({
+      ...r,
+      received: r.received_ngn_bn ?? r.received,
+      billed: r.billed_ngn_bn ?? r.billed,
+      collected: r.collected_ngn_bn ?? r.collected,
+      unbilled: r.unbilled_ngn_bn ?? r.unbilled,
+      uncollected: r.uncollected_ngn_bn ?? r.uncollected,
+      leak: r.total_leak_ngn_bn ?? r.leak,
+      be: r.billing_eff_pct ?? r.be,
+      ce: r.collection_eff_pct ?? r.ce,
+      atcc: r.atcc_loss_pct ?? r.atcc,
+      primary: r.primary_leak ?? r.primary ?? 'both'
+    })),
+    national: res.national_data.map(r => ({
+      ...r,
+      received: r.received_ngn_bn ?? r.received,
+      billed: r.billed_ngn_bn ?? r.billed,
+      collected: r.collected_ngn_bn ?? r.collected,
+      unbilled: r.unbilled_ngn_bn ?? r.unbilled,
+      uncollected: r.uncollected_ngn_bn ?? r.uncollected,
+      leak: r.total_leak_ngn_bn ?? r.leak,
+      be: r.billing_eff_pct ?? r.be,
+      ce: r.collection_eff_pct ?? r.ce,
+      atcc: r.atcc_loss_pct ?? r.atcc,
+      basis: r.received_basis ?? r.basis
+    })),
+    changes: res.changes_data.map(c => ({
+      ...c,
+      dce: c.ce_change_pp ?? c.ce_change,
+      datcc: c.atcc_change_pp ?? c.atcc_change
+    })),
+    issues: res.issues || [],
+    note: res.summary_note || ""
+  };
+
+  const periods = [...new Set(AppData.disco.map(r => r.period))].sort();
+  curPeriod = periods[periods.length - 1] || "";
+  renderAll();
+}
+
+async function loadDefaultData() {
+  try {
+    const res = await fetch('/api/data');
+    const json = await res.json();
+    if (json.disco_data) {
+      loadIngestPayload(json);
+    }
+  } catch (e) {
+    console.error("Failed to load initial data", e);
+  }
+}
+$('loadDemoBtn').onclick = loadDefaultData;
+
+$('saveWorkspaceBtn').onclick = async () => {
+  try {
+    const res = await fetch('/api/save', { method: 'POST' });
+    const j = await res.json();
+    showToast(j.message || "Saved to project workspace");
+  } catch(e) {
+    alert("Save failed: " + e.message);
+  }
+};
+
+function renderPeriods() {
+  const periods = [...new Set(AppData.disco.map(r => r.period))].sort();
+  const box = $('periodTabs');
+  box.replaceChildren();
+  periods.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = `period-tab ${p === curPeriod ? 'active' : ''}`;
+    btn.textContent = p.replace('Q', ' Q');
+    btn.onclick = () => { curPeriod = p; renderAll(); };
+    box.appendChild(btn);
+  });
+}
+
+function renderKPIs() {
+  const box = $('kpiGrid');
+  box.replaceChildren();
+  const n = AppData.national.find(r => r.period === curPeriod);
+  if (!n) return;
+
+  const cards = [
+    { label: "Energy Received", val: "₦" + f1(n.received), unit: "bn", sub: "Wholesale cost delivered to DisCos", cls: "accent" },
+    { label: "Billed to Customers", val: "₦" + f1(n.billed), unit: "bn", sub: "Commercial billing invoices issued", cls: "bill" },
+    { label: "Revenue Collected", val: "₦" + f1(n.collected), unit: "bn", sub: "Cash collected from consumers", cls: "coll" },
+    { label: "Commercial Leakage", val: "₦" + f1(n.leak), unit: "bn", sub: "Total money leaking from the grid", cls: "bad" },
+    { label: "Collection Efficiency", val: f2(n.ce) + "%", unit: "", sub: "Share of billed naira paid", cls: "coll" },
+    { label: "ATC&C Loss", val: f2(n.atcc) + "%", unit: "", sub: "Aggregate technical, commercial & collection loss", cls: "warn" }
+  ];
+
+  cards.forEach(c => {
+    const el = document.createElement('div');
+    el.className = `kpi-card ${c.cls}`;
+    el.innerHTML = `
+      <div class="kpi-label">${c.label}</div>
+      <div class="kpi-val">${c.val} <span class="kpi-unit">${c.unit}</span></div>
+      <div class="kpi-sub">${c.sub}</div>
+    `;
+    if (c.label === "Commercial Leakage") {
+      const ubShare = (n.unbilled_share || 0) * 100;
+      const sp = document.createElement('div');
+      sp.className = 'split-bar';
+      sp.innerHTML = `<i style="width:${ubShare}%;background:var(--bill)"></i><i style="flex:1;background:var(--coll)"></i>`;
+      el.appendChild(sp);
+      const leg = document.createElement('div');
+      leg.style.cssText = 'display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--ink-secondary)';
+      leg.innerHTML = `<span>Unbilled: ${ubShare.toFixed(0)}%</span><span>Uncollected: ${(100-ubShare).toFixed(0)}%</span>`;
+      el.appendChild(leg);
+    }
+    box.appendChild(el);
+  });
+
+  $('vatBasisNote').textContent = n.basis === 'vat_adjusted' ? '• VAT-adjusted basis' : '• Pre-VAT basis';
+}
+
+function renderTrend() {
+  const W = 580, H = 240, L = 42, R = 110, T = 16, B = 30, NS = 'http://www.w3.org/2000/svg';
+  const periods = [...new Set(AppData.disco.map(r => r.period))].sort();
+  const nat = Object.fromEntries(AppData.national.map(r => [r.period, r.ce]));
+  const by = {};
+  AppData.disco.forEach(r => { (by[r.disco] = by[r.disco] || {})[r.period] = r.ce; });
+
+  const vals = [...Object.values(nat), ...AppData.disco.map(r => r.ce)].filter(v => v != null);
+  const lo = Math.max(0, Math.floor((Math.min(...vals) - 5) / 10) * 10);
+  const hi = Math.min(100, Math.ceil((Math.max(...vals) + 2) / 10) * 10);
+
+  const x = i => periods.length <= 1 ? (L + W - R) / 2 : L + i * (W - L - R) / (periods.length - 1);
+  const y = v => T + (hi - v) * (H - T - B) / (hi - lo);
+
+  const s = document.createElementNS(NS, 'svg');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  s.style.cssText = 'width:100%;height:auto;display:block;';
+
+  const mk = (t, a, tx) => {
+    const e = document.createElementNS(NS, t);
+    for (const k in a) e.setAttribute(k, a[k]);
+    if (tx != null) e.textContent = tx;
+    return e;
+  };
+
+  for (let g = lo; g <= hi; g += 20) {
+    s.append(mk('line', { x1: L, x2: W - R, y1: y(g), y2: y(g), stroke: 'var(--card-border)', 'stroke-dasharray': '3 3' }));
+    s.append(mk('text', { x: L - 6, y: y(g) + 4, 'text-anchor': 'end', class: 'muted' }, g + '%'));
+  }
+  periods.forEach((p, i) => s.append(mk('text', { x: x(i), y: H - 8, 'text-anchor': 'middle', class: 'muted' }, p.replace('Q', ' Q'))));
+
+  const path = m => periods.map((p, i) => [x(i), m[p]]).filter(a => a[1] != null).map((a, i) => (i ? 'L' : 'M') + a[0] + ' ' + y(a[1])).join(' ');
+
+  Object.keys(by).forEach(d => {
+    if (d === focusDisco) return;
+    const l = mk('path', { d: path(by[d]), fill: 'none', stroke: 'var(--ink-muted)', 'stroke-opacity': 0.35, 'stroke-width': 1.5 });
+    l.append(mk('title', {}, d));
+    s.append(l);
+  });
+
+  const drawLine = (m, col, w, label) => {
+    s.append(mk('path', { d: path(m), fill: 'none', stroke: col, 'stroke-width': w, 'stroke-linejoin': 'round' }));
+    let last = null;
+    periods.forEach((p, i) => {
+      if (m[p] != null) {
+        last = [x(i), m[p]];
+        const c = mk('circle', { cx: x(i), cy: y(m[p]), r: 4, fill: col });
+        c.append(mk('title', {}, `${label} ${p}: ${m[p].toFixed(2)}%`));
+        s.append(c);
+      }
+    });
+    return last;
+  };
+
+  const ln = drawLine(nat, 'var(--coll)', 3, 'National');
+  if (ln) s.append(mk('text', { x: ln[0] + 8, y: y(ln[1]) + 4, fill: 'var(--coll)', 'font-weight': 700 }, `National ${ln[1].toFixed(1)}%`));
+
+  if (focusDisco && by[focusDisco]) {
+    const fl = drawLine(by[focusDisco], 'var(--bill)', 3, focusDisco);
+    if (fl) s.append(mk('text', { x: fl[0] + 8, y: y(fl[1]) + 4, fill: 'var(--bill)', 'font-weight': 700 }, `${focusDisco} ${fl[1].toFixed(1)}%`));
+  }
+
+  $('trendChart').replaceChildren(s);
+
+  // Render disco pills
+  const pillsBox = $('discoPills');
+  pillsBox.replaceChildren();
+  Object.keys(by).sort().forEach(d => {
+    const pill = document.createElement('button');
+    pill.className = `disco-pill ${d === focusDisco ? 'active' : ''}`;
+    pill.textContent = d;
+    pill.onclick = () => { focusDisco = focusDisco === d ? null : d; renderTrend(); renderTable(); };
+    pillsBox.appendChild(pill);
+  });
+}
+
+function renderBarChart() {
+  const rows = AppData.disco.filter(r => r.period === curPeriod).sort((a, b) => (b.leak || 0) - (a.leak || 0));
+  const W = 580, rowH = 24, top = 6, left = 95, right = 50, H = top + rows.length * rowH + 10;
+  const max = Math.max(...rows.map(r => r.leak || 0), 1);
+  const NS = 'http://www.w3.org/2000/svg';
+
+  const s = document.createElementNS(NS, 'svg');
+  s.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  s.style.cssText = 'width:100%;height:auto;display:block;';
+
+  const mk = (t, a, x) => {
+    const e = document.createElementNS(NS, t);
+    for (const k in a) e.setAttribute(k, a[k]);
+    if (x != null) e.textContent = x;
+    return e;
+  };
+
+  rows.forEach((r, i) => {
+    const y = top + i * rowH;
+    const sc = (W - left - right) / max;
+    const u = Math.max(r.unbilled || 0, 0) * sc;
+    const c = Math.max(r.uncollected || 0, 0) * sc;
+
+    s.append(mk('text', { x: left - 8, y: y + 15, 'text-anchor': 'end', 'font-weight': r.disco === focusDisco ? '700' : '500', fill: r.disco === focusDisco ? 'var(--accent)' : 'inherit' }, r.disco));
+
+    const g = mk('g', { style: 'cursor:pointer;' });
+    g.onclick = () => { focusDisco = focusDisco === r.disco ? null : r.disco; renderTrend(); renderTable(); };
+    g.append(mk('title', {}, `${r.disco}: Unbilled ₦${f2(r.unbilled)}bn, Uncollected ₦${f2(r.uncollected)}bn (Total ₦${f2(r.leak)}bn)`));
+    g.append(mk('rect', { x: left, y: y + 3, width: u, height: 16, rx: 3, fill: 'var(--bill)' }));
+    g.append(mk('rect', { x: left + u, y: y + 3, width: c, height: 16, rx: 3, fill: 'var(--coll)' }));
+    g.append(mk('text', { x: left + u + c + 6, y: y + 15, class: 'muted' }, f1(r.leak)));
+    s.append(g);
+  });
+
+  $('barChart').replaceChildren(s);
+}
+
+function renderTable() {
+  const tbody = $('discoTable').querySelector('tbody');
+  tbody.replaceChildren();
+
+  const chMap = Object.fromEntries(AppData.changes.filter(c => c.period === curPeriod).map(c => [c.disco, c]));
+  let rows = AppData.disco.filter(r => r.period === curPeriod).map(r => ({
+    ...r,
+    dce: chMap[r.disco]?.dce ?? null,
+    datcc: chMap[r.disco]?.datcc ?? null
+  }));
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    rows = rows.filter(r => r.disco.toLowerCase().includes(q));
+  }
+
+  rows.sort((a, b) => {
+    let va = a[sortCol], vb = b[sortCol];
+    if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    va = va ?? -1e9; vb = vb ?? -1e9;
+    return sortAsc ? va - vb : vb - va;
+  });
+
+  const delta = (v, goodUp) => {
+    if (v == null) return `<span class="delta-zero">—</span>`;
+    const isGood = (v > 0) === goodUp;
+    const cls = Math.abs(v) < 0.005 ? 'delta-zero' : (isGood ? 'delta-pos' : 'delta-neg');
+    return `<span class="${cls}">${v > 0 ? '+' : ''}${v.toFixed(2)} pp</span>`;
+  };
+
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    if (r.disco === focusDisco) tr.className = 'selected';
+    tr.onclick = () => { focusDisco = focusDisco === r.disco ? null : r.disco; renderTrend(); renderBarChart(); renderTable(); };
+
+    const ubShare = r.unbilled_share != null ? (r.unbilled_share * 100).toFixed(0) + '%' : '—';
+    const primBadge = `<span class="badge ${r.primary}">${r.primary}</span>`;
+
+    tr.innerHTML = `
+      <td><strong>${r.disco}</strong></td>
+      <td><strong>₦${f1(r.leak)}</strong></td>
+      <td>${f1(r.share_of_disco_leak_pct)}%</td>
+      <td>${ubShare}</td>
+      <td>${primBadge}</td>
+      <td>${f2(r.ce)}%</td>
+      <td>${delta(r.dce, true)}</td>
+      <td>${f2(r.be)}%</td>
+      <td>${f2(r.atcc)}%</td>
+      <td>${delta(r.datcc, false)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderValidation() {
+  const issues = AppData.issues || [];
+  $('valCount').textContent = issues.length;
+  const box = $('valBody');
+  box.replaceChildren();
+
+  if (!issues.length) {
+    box.innerHTML = `<div style="color:var(--ok);font-weight:600">✓ All automated reconciliation & coverage checks passed with 0 errors.</div>`;
+    return;
+  }
+
+  issues.forEach(iss => {
+    const el = document.createElement('div');
+    el.className = 'val-item';
+    const tagCls = iss.level === 'error' ? 'bad' : (iss.level === 'warning' ? 'warn' : 'ok');
+    el.innerHTML = `
+      <span class="status-indicator ${tagCls}" style="padding:2px 8px;font-size:11px;">${iss.level.toUpperCase()}</span>
+      <div>
+        <strong style="color:var(--ink)">${iss.check} @ ${iss.where}:</strong>
+        <span style="color:var(--ink-secondary)">${iss.detail}</span>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+}
+
+$('valHeader').onclick = () => {
+  $('valBody').classList.toggle('open');
+};
+
+// Search filter
+$('searchFilter').oninput = e => {
+  searchQuery = e.target.value.trim();
+  renderTable();
+};
+
+// Table column sorting
+document.querySelectorAll('#discoTable th').forEach(th => {
+  th.onclick = () => {
+    const key = th.dataset.key;
+    if (sortCol === key) {
+      sortAsc = !sortAsc;
+    } else {
+      sortCol = key;
+      sortAsc = key === 'disco';
+    }
+    document.querySelectorAll('#discoTable th').forEach(t => t.classList.remove('sort-active'));
+    th.classList.add('sort-active');
+    renderTable();
+  };
+});
+
+function exportData(format) {
+  window.open(`/api/export/${format}?period=${encodeURIComponent(curPeriod)}`, '_blank');
+}
+
+function renderAll() {
+  renderPeriods();
+  renderKPIs();
+  renderTrend();
+  renderBarChart();
+  renderTable();
+  renderValidation();
+}
+
+// Initial boot
+loadDefaultData();
+</script>
+</body>
+</html>

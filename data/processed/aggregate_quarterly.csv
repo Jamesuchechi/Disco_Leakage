@@ -1,0 +1,3 @@
+period,quarter_end,received_ngn_bn,billed_ngn_bn,collected_ngn_bn,billing_eff_pct,collection_eff_pct,atcc_loss_pct,atcc_target_pct,reported_in,restated,billing_method,received_basis,atcc_derived
+2025Q4,2025-12-31,969.19,795.06,630.93,82.03,79.36,34.9,,2026Q1,False,commercial,pre_vat,True
+2026Q1,2026-03-31,955.19,756.93,597.56,79.24,78.95,37.44,,2026Q1,False,commercial,vat_adjusted,True
