@@ -1,0 +1,8 @@
+__pycache__/
+.venv/
+.pytest_cache/
+*.pyc
+# raw PDFs are re-fetchable from data/raw/sources.csv (sha256 recorded in SOURCES.md)
+data/raw/*.pdf
+data/interim/*.csv
+.ipynb_checkpoints/
